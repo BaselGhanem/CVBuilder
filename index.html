@@ -2,598 +2,835 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaselResume | Royal Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Basel | Cinematic Experience</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* --- 1. DESIGN VARIABLES (THEME) --- */
+        /* * --------------------------------------------------------------------------
+         * SYSTEM ARCHITECTURE: CORE VARIABLES
+         * --------------------------------------------------------------------------
+         */
         :root {
-            --primary: #0f172a;       /* كحلي غامق فخم */
-            --gold: #d4af37;          /* ذهبي للعناوين */
-            --bg-body: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --border-light: #e2e8f0;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --font-ar: 'Cairo', sans-serif;
-            --font-en: 'Playfair Display', serif;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-deep: #050507;
+            --bg-panel: rgba(20, 20, 25, 0.7);
+            
+            /* Brand Colors - Electric Violet Core */
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --primary-glow: rgba(139, 92, 246, 0.5);
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            
+            /* Glassmorphism System */
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --glass-blur: blur(24px);
+            
+            /* Text Hierarchy */
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-placeholder: #64748b;
+            
+            /* Animation Curves */
+            --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.3s;
+            --duration-med: 0.6s;
         }
 
-        /* --- 2. GLOBAL RESET & ANIMATIONS --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-
+        /* Reset & Base */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            font-family: var(--font-ar);
-            background-color: var(--bg-body);
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 24px 24px;
-            color: var(--text-dark);
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             height: 100vh;
-            overflow: hidden; /* لمنع السكرول الخارجي */
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
+            opacity: 0; /* For Initial Load Animation */
+            animation: systemBoot 1s var(--ease-smooth) forwards;
         }
 
-        /* Intro Animation */
-        #intro-overlay {
+        @keyframes systemBoot { to { opacity: 1; } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        /* * --------------------------------------------------------------------------
+         * VISUAL FX: ATMOSPHERE & PARTICLES
+         * --------------------------------------------------------------------------
+         */
+        .cinematic-noise {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--primary); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column;
-            transition: opacity 1s ease;
+            background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
+            pointer-events: none; z-index: 0; opacity: 0.6;
         }
-        .intro-text { color: var(--gold); font-size: 3rem; font-weight: 800; animation: fadeInUp 1s ease forwards; }
+
+        .aurora-glow {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.08), transparent 40%),
+                        radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.05), transparent 40%);
+            z-index: -1;
+            animation: auroraMove 20s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes auroraMove {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-2%, 2%) scale(1.05); }
+        }
+
+        /* * --------------------------------------------------------------------------
+         * LAYOUT: SPLIT STUDIO
+         * --------------------------------------------------------------------------
+         */
+        .studio-layout {
+            display: grid;
+            grid-template-columns: 500px 1fr;
+            width: 100%; height: 100%;
+            position: relative; z-index: 10;
+        }
+
+        /* * --------------------------------------------------------------------------
+         * ZONE 1: THE EDITOR (Left)
+         * --------------------------------------------------------------------------
+         */
+        .editor-zone {
+            background: var(--bg-panel);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-left: 1px solid var(--glass-border);
+            display: flex; flex-direction: column;
+            position: relative;
+            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+        }
+
+        /* Header Area */
+        .brand-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { 
+            font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px; 
+            display: flex; align-items: center; gap: 12px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .step-indicator {
+            background: rgba(255,255,255,0.05); padding: 5px 12px; 
+            border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--glass-border);
+        }
+
+        /* Progress Bar */
+        .progress-track { height: 2px; background: rgba(255,255,255,0.05); width: 100%; }
+        .progress-fill { 
+            height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent-cyan)); 
+            width: 0%; transition: width 0.8s var(--ease-elastic);
+            box-shadow: 0 0 15px var(--primary-glow);
+            position: relative;
+        }
+        .progress-fill::after {
+            content: ''; position: absolute; right: 0; top: -4px; width: 10px; height: 10px;
+            background: #fff; border-radius: 50%; box-shadow: 0 0 10px #fff;
+        }
+
+        /* Form Area */
+        .steps-viewport {
+            flex: 1; padding: 40px; overflow-y: auto; overflow-x: hidden;
+            display: flex; flex-direction: column; 
+            /* scroll-behavior: smooth; Not used due to JS control */
+        }
+
+        .step-slide {
+            display: none; opacity: 0;
+            animation: slideUpFade 0.6s var(--ease-smooth) forwards;
+        }
+        .step-slide.active { display: block; }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Typography */
+        h2 { 
+            font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; line-height: 1.1; 
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        p.desc { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 40px; font-weight: 300; }
+
+        /* Advanced Inputs (Floating Label) */
+        .input-group { position: relative; margin-bottom: 30px; }
         
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .floating-input {
+            width: 100%; padding: 18px 20px;
+            font-size: 1.1rem; background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px; color: #fff; font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .floating-input:focus {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+            transform: translateY(-2px);
+        }
+        .floating-label {
+            position: absolute; right: 20px; top: 18px;
+            color: var(--text-placeholder); pointer-events: none;
+            transition: 0.3s var(--ease-elastic); font-size: 1.1rem;
+        }
+        .floating-input:focus ~ .floating-label,
+        .floating-input:not(:placeholder-shown) ~ .floating-label {
+            top: -12px; right: 10px; font-size: 0.85rem;
+            color: var(--primary); background: var(--bg-deep);
+            padding: 0 8px; border-radius: 4px;
         }
 
-        /* --- 3. LAYOUT STRUCTURE --- */
-        header {
-            background: white; border-bottom: 1px solid var(--border-light);
-            padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); z-index: 100;
+        /* Avatar Future-Tech */
+        .avatar-uploader {
+            width: 150px; height: 150px; margin: 0 auto 50px;
+            border-radius: 50%; position: relative; cursor: pointer;
+            background: var(--glass-shine);
+            border: 2px dashed var(--glass-border);
+            transition: all 0.4s var(--ease-elastic);
+            overflow: hidden; group;
         }
+        .avatar-uploader:hover { border-color: var(--primary); transform: scale(1.05) rotate(5deg); }
+        .avatar-uploader img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.3s; }
+        .avatar-uploader.has-img img { opacity: 1; }
+        .upload-icon {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            font-size: 2rem; color: var(--text-secondary); transition: 0.3s;
+        }
+        .avatar-uploader.has-img .upload-icon { opacity: 0; }
 
-        .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .brand span { color: var(--gold); }
+        /* Dynamic List Items (Cards) */
+        .mini-card {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 12px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            animation: popIn 0.4s var(--ease-elastic);
+            transition: 0.3s;
+        }
+        .mini-card:hover { border-color: var(--text-secondary); transform: translateX(-5px); }
+        
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .controls { display: flex; gap: 15px; }
-
+        /* Control Bar */
+        .control-bar {
+            padding: 30px 40px; display: flex; gap: 20px;
+            background: rgba(0,0,0,0.3); border-top: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Magnetic Buttons */
         .btn {
-            padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none;
-            display: flex; align-items: center; gap: 8px; transition: var(--transition); font-family: inherit;
+            padding: 18px 30px; border-radius: 14px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; border: none; transition: all 0.3s ease;
+            position: relative; overflow: hidden;
         }
-        .btn-gold { background: var(--gold); color: white; }
-        .btn-gold:hover { background: #b5952f; transform: translateY(-2px); }
-        .btn-dark { background: var(--primary); color: white; }
-        .btn-dark:hover { background: #1e293b; transform: translateY(-2px); }
-        .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border-light); }
-        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-primary { 
+            background: var(--primary); color: white; flex: 2;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+        }
+        .btn-primary:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.6);
+            background: #8b5cf6;
+        }
+        .btn-ghost { 
+            background: transparent; color: var(--text-secondary); flex: 1;
+            border: 1px solid var(--glass-border);
+        }
+        .btn-ghost:hover { border-color: white; color: white; background: rgba(255,255,255,0.05); }
 
-        /* Main Workspace: Split Screen */
-        .workspace {
-            display: flex; flex: 1; height: calc(100vh - 70px); overflow: hidden;
-        }
+        .btn:active { transform: scale(0.98); }
 
-        /* --- 4. EDITOR PANEL (Left/Right depending on Lang) --- */
-        .editor-panel {
-            width: 40%; min-width: 400px; background: white; border-inline-end: 1px solid var(--border-light);
-            padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 2rem;
+        /* * --------------------------------------------------------------------------
+         * ZONE 2: THE PREVIEW (Right - 3D Space)
+         * --------------------------------------------------------------------------
+         */
+        .preview-zone {
+            display: flex; align-items: center; justify-content: center;
+            background: transparent;
+            perspective: 1500px; /* Deep perspective */
+            overflow: hidden;
+            cursor: grab;
         }
+        .preview-zone:active { cursor: grabbing; }
 
-        .section-header {
-            font-size: 0.9rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1px;
-            border-bottom: 2px solid var(--border-light); padding-bottom: 5px; margin-bottom: 15px;
-        }
-
-        .input-group { margin-bottom: 1rem; position: relative; }
-        label { display: block; font-size: 0.85rem; margin-bottom: 5px; color: var(--text-muted); font-weight: 600; }
-        
-        input, textarea, select {
-            width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: 8px;
-            font-family: inherit; transition: var(--transition); background: #f8fafc;
-        }
-        input:focus, textarea:focus { border-color: var(--gold); background: white; box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
-
-        /* Image Upload Styling */
-        .photo-upload-box {
-            display: flex; align-items: center; gap: 20px; padding: 15px;
-            border: 1px dashed var(--border-light); border-radius: 12px; background: #fcfcfc;
-        }
-        .avatar-preview {
-            width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
-            border: 2px solid var(--gold); background: #eee;
-        }
-
-        /* Experience Cards in Editor */
-        .exp-card-mini {
-            background: white; border: 1px solid var(--border-light); padding: 15px; border-radius: 8px;
-            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        .exp-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--primary); }
-        .exp-info p { font-size: 0.8rem; color: var(--text-muted); }
-        .exp-actions button { background: none; border: none; cursor: pointer; opacity: 0.6; padding: 5px; font-size: 1.1rem; }
-        .exp-actions button:hover { opacity: 1; transform: scale(1.1); }
-
-        /* --- 5. PREVIEW PANEL (A4 Paper) --- */
-        .preview-panel {
-            flex: 1; background: #e2e8f0; display: flex; justify-content: center; padding: 40px; overflow-y: auto;
+        .paper-3d-wrapper {
+            width: 210mm; min-height: 297mm;
+            background: #ffffff; color: #1e293b;
+            transform-style: preserve-3d;
+            transform: scale(0.65) rotateX(0deg) rotateY(0deg);
+            box-shadow: 
+                0 0 0 1px rgba(0,0,0,0.05),
+                0 20px 50px rgba(0,0,0,0.4),
+                0 50px 100px -20px rgba(0,0,0,0.6);
+            border-radius: 4px;
+            transition: transform 0.1s linear; /* Smooth mouse follow */
             position: relative;
         }
 
-        .a4-paper {
-            width: 210mm; min-height: 297mm; background: white; padding: 15mm 20mm;
-            box-shadow: var(--shadow-lg); color: var(--text-dark);
-            transform-origin: top center; transition: transform 0.3s;
+        /* Resume Content Styling */
+        .res-container { height: 100%; display: flex; flex-direction: column; }
+        .res-header { 
+            background: #1e293b; color: white; padding: 50px; 
+            display: flex; gap: 30px; align-items: center; 
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
         }
-
-        /* --- RESUME TYPOGRAPHY & DESIGN --- */
-        .resume-header {
-            display: flex; gap: 25px; align-items: center; border-bottom: 3px solid var(--primary);
-            padding-bottom: 25px; margin-bottom: 30px;
+        .res-photo { 
+            width: 120px; height: 120px; border-radius: 50%; object-fit: cover; 
+            border: 5px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: none;
         }
-        .resume-photo { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; border: 2px solid var(--border-light); display: none; }
-        .header-text h1 { font-size: 2.8rem; line-height: 1.1; color: var(--primary); font-family: var(--font-en); margin-bottom: 5px; }
-        .header-text p { font-size: 1.2rem; color: var(--gold); font-weight: 600; margin-bottom: 15px; }
-        .contact-info { display: flex; flex-wrap: wrap; gap: 15px; font-size: 0.9rem; color: var(--text-muted); }
-        .contact-info span { display: flex; align-items: center; gap: 5px; }
-
-        .res-section { margin-bottom: 25px; }
-        .res-title {
-            font-size: 0.9rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;
-            margin-bottom: 15px; display: flex; align-items: center; gap: 10px;
-        }
-        .res-title::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
-
-        .res-job { margin-bottom: 20px; }
-        .job-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
-        .job-role { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-        .job-company { font-weight: 600; color: var(--gold); font-size: 0.95rem; }
-        .job-date { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-muted); }
-        .job-desc { font-size: 0.95rem; line-height: 1.7; color: #334155; white-space: pre-wrap; margin-top: 5px; }
-
-        .skills-container { display: flex; flex-wrap: wrap; gap: 8px; }
-        .skill-chip {
-            background: #f1f5f9; color: var(--primary); padding: 5px 12px; border-radius: 6px;
-            font-size: 0.9rem; font-weight: 600; border: 1px solid var(--border-light);
-        }
-
-        /* --- 6. MODAL SYSTEM (Validation & Input) --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
-            z-index: 2000; display: none; justify-content: center; align-items: center;
-        }
-        .modal-box {
-            background: white; width: 500px; padding: 2rem; border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* --- 7. MOBILE RESPONSIVENESS (TABS) --- */
-        .mobile-tabs { display: none; }
+        .res-body { padding: 40px 50px; display: grid; grid-template-columns: 2fr 1.2fr; gap: 40px; }
         
+        .res-section-title {
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px;
+            color: #64748b; border-bottom: 2px solid #e2e8f0; 
+            padding-bottom: 10px; margin-bottom: 20px; font-weight: 800;
+        }
+        
+        /* * --------------------------------------------------------------------------
+         * UTILITIES & MOBILE
+         * --------------------------------------------------------------------------
+         */
+        .toast-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 2000; pointer-events: none;
+        }
+        .toast {
+            background: rgba(20, 20, 25, 0.9); backdrop-filter: blur(10px);
+            border: 1px solid var(--primary); color: white;
+            padding: 12px 25px; border-radius: 30px;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: toastIn 0.4s var(--ease-elastic);
+        }
+        @keyframes toastIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Mobile Adaptation */
         @media (max-width: 1024px) {
-            .workspace { flex-direction: column; height: auto; overflow: visible; padding-bottom: 80px; }
-            .editor-panel { width: 100%; min-width: 0; border: none; height: auto; overflow: visible; display: block; }
-            .preview-panel { display: none; width: 100%; padding: 10px; }
-            .preview-panel.active { display: flex; }
-            .editor-panel.hidden { display: none; }
-            
-            .mobile-tabs {
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
-                background: white; border-top: 1px solid var(--border-light); z-index: 999;
-                box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            .studio-layout { display: block; }
+            .preview-zone { 
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: #000; z-index: 999; 
+                transform: translateY(100%); transition: transform 0.5s var(--ease-elastic);
+                display: flex; opacity: 0;
             }
-            .tab-btn { flex: 1; border: none; background: transparent; font-weight: bold; cursor: pointer; color: var(--text-muted); }
-            .tab-btn.active { color: var(--primary); background: #f1f5f9; border-top: 3px solid var(--gold); }
+            .preview-zone.show-mobile { transform: translateY(0); opacity: 1; }
+            .paper-3d-wrapper { transform: scale(0.48) !important; margin-top: 20px; }
             
-            .a4-paper { width: 100%; min-height: auto; zoom: 0.6; } /* Zoom out preview on mobile */
+            .editor-zone { width: 100%; height: 100vh; border: none; }
+            .brand-header { padding: 20px; }
+            .steps-viewport { padding: 20px; }
+            h2 { font-size: 2rem; }
+            
+            .mobile-fab {
+                position: fixed; bottom: 100px; left: 20px; z-index: 100;
+                width: 50px; height: 50px; border-radius: 50%;
+                background: var(--primary); color: white; border: none;
+                box-shadow: 0 10px 20px rgba(124, 58, 237, 0.5);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1.2rem; cursor: pointer;
+            }
         }
+        .mobile-fab { display: none; }
+        @media (max-width: 1024px) { .mobile-fab { display: flex; } }
 
-        /* --- 8. PRINT OPTIMIZATION (THE FIX) --- */
+        /* Print Logic */
         @media print {
-            @page { margin: 0; size: A4 portrait; }
-            body { background: white; height: auto; display: block; overflow: visible; }
-            header, .editor-panel, .mobile-tabs, .modal-overlay, #intro-overlay, .exp-actions { display: none !important; }
-            .workspace { display: block; height: auto; overflow: visible; }
-            .preview-panel { display: block !important; padding: 0; background: white; width: 100%; height: auto; }
-            .a4-paper { 
-                box-shadow: none; margin: 0 auto; width: 100%; min-height: auto;
-                page-break-after: always; padding: 15mm 20mm; transform: none !important;
-            }
+            body > *:not(.preview-zone) { display: none; }
+            .preview-zone { position: absolute; top:0; left:0; width:100%; height:auto; display:block; background:white; transform:none; opacity:1; perspective:none; overflow:visible; }
+            .paper-3d-wrapper { transform: none !important; box-shadow: none; margin: 0; width: 100%; height: auto; border-radius: 0; }
+            .res-container { width: 100%; }
+            @page { margin: 0; size: auto; }
         }
-
-        /* English/LTR Overrides */
-        body[dir="ltr"] { font-family: 'Inter', sans-serif; }
-        body[dir="ltr"] .header-text h1 { font-family: 'Playfair Display', serif; }
-        body[dir="ltr"] .editor-panel { border-inline-end: none; border-inline-start: 1px solid var(--border-light); }
     </style>
 </head>
 <body>
 
-    <div id="intro-overlay">
-        <div class="intro-text">BaselResume_</div>
-        <div style="color:white; margin-top:10px; font-size:0.9rem; opacity:0.8;">التميز والفخامة</div>
-    </div>
+    <div class="cinematic-noise"></div>
+    <div class="aurora-glow"></div>
+    <div class="toast-container" id="toastArea"></div>
 
-    <header>
-        <div class="brand">
-            Basel<span>Resume</span>
-        </div>
-        <div class="controls">
-            <button class="btn btn-ghost" onclick="toggleLang()" id="langBtn">🇺🇸 English</button>
-            <button class="btn btn-dark" onclick="window.print()">
-                🖨️ <span id="txtPrint">حفظ PDF</span>
-            </button>
-        </div>
-    </header>
-
-    <div class="workspace">
+    <div class="studio-layout">
         
-        <div class="editor-panel" id="editorPanel">
+        <div class="editor-zone">
+            <div class="brand-header">
+                <div class="logo">
+                    <i class="fa-solid fa-cube" style="color:var(--primary)"></i> BASEL<span style="font-weight:200">BUILD</span>
+                </div>
+                <div class="step-indicator"><span id="currStep">1</span> / 5</div>
+            </div>
             
-            <div class="photo-upload-box">
-                <img src="" alt="" class="avatar-preview" id="editorAvatar" style="display:none">
-                <div style="width:70px; height:70px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-size:2rem;" id="avatarPlaceholder">📷</div>
-                <div style="flex:1">
-                    <label style="cursor:pointer; color:var(--accent); text-decoration:underline">
-                        <span id="txtUpload">رفع صورة شخصية</span>
-                        <input type="file" hidden accept="image/*" onchange="handleImage(this)">
-                    </label>
-                    <div style="font-size:0.75rem; color:#999; margin-top:5px" id="txtRemove" onclick="removeImage()">حذف الصورة</div>
-                </div>
-            </div>
+            <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
 
-            <div>
-                <div class="section-header" id="headPersonal">المعلومات الشخصية</div>
-                <div class="input-group"><label id="lblNa">الاسم الكامل</label><input type="text" id="name" oninput="updateResume()"></div>
-                <div class="input-group"><label id="lblTi">المسمى الوظيفي</label><input type="text" id="title" oninput="updateResume()"></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px">
-                    <div class="input-group"><label>Email</label><input type="text" id="email" oninput="updateResume()"></div>
-                    <div class="input-group"><label id="lblPh">الهاتف</label><input type="text" id="phone" oninput="updateResume()"></div>
-                </div>
-                <div class="input-group"><label id="lblLoc">العنوان</label><input type="text" id="location" oninput="updateResume()"></div>
-            </div>
-
-            <div>
-                <div class="section-header" id="headSum">نبذة عني</div>
-                <textarea id="summary" rows="4" placeholder="..." oninput="updateResume()"></textarea>
-            </div>
-
-            <div>
-                <div class="section-header" id="headExp">الخبرات العملية</div>
-                <div id="experienceList"></div>
-                <button class="btn btn-ghost" style="width:100%; justify-content:center; border-style:dashed;" onclick="openModal()" id="btnAddExp">+ إضافة خبرة جديدة</button>
-            </div>
-
-            <div>
-                <div class="section-header" id="headSkill">المهارات</div>
-                <textarea id="skills" rows="3" placeholder="Excel, Management, ..." oninput="updateResume()"></textarea>
-            </div>
-            <br>
-        </div>
-
-        <div class="preview-panel" id="previewPanel">
-            <div class="a4-paper">
-                <header class="resume-header">
-                    <img src="" class="resume-photo" id="resPhoto">
-                    <div style="flex:1">
-                        <div class="header-text">
-                            <h1 id="resName">Your Name</h1>
-                            <p id="resTitle">Job Title</p>
-                        </div>
-                        <div class="contact-info" id="resContact"></div>
+            <div class="steps-viewport">
+                
+                <div class="step-slide active" id="step1">
+                    <h2>الهوية الرقمية</h2>
+                    <p class="desc">الإنطباع الأول هو الأخير. لنصنع هوية بصرية قوية.</p>
+                    
+                    <div class="avatar-uploader" id="avatarBox" onclick="document.getElementById('fileIn').click()">
+                        <img id="imgPreview" alt="Profile">
+                        <i class="fa-solid fa-camera upload-icon"></i>
+                        <input type="file" id="fileIn" hidden accept="image/*" onchange="app.handleImage(this)">
                     </div>
-                </header>
 
-                <section class="res-section" id="secSum">
-                    <div class="res-title">Profile</div>
-                    <p class="job-desc" id="resSummary"></p>
-                </section>
+                    <div class="input-group">
+                        <input type="text" id="inName" class="floating-input" placeholder=" " oninput="app.sync()">
+                        <label class="floating-label">الاسم الكامل</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="inTitle" class="floating-input" placeholder=" " oninput="app.sync()">
+                        <label class="floating-label">المسمى الوظيفي (التخصص)</label>
+                    </div>
+                </div>
 
-                <section class="res-section" id="secExp">
-                    <div class="res-title">Experience</div>
-                    <div id="resExperience"></div>
-                </section>
+                <div class="step-slide" id="step2">
+                    <h2>قنوات الاتصال</h2>
+                    <p class="desc">كيف يمكن للعالم الوصول إليك؟</p>
+                    <div class="input-group">
+                        <input type="tel" id="inPhone" class="floating-input" placeholder=" " oninput="app.sync()">
+                        <label class="floating-label">رقم الهاتف</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="inEmail" class="floating-input" placeholder=" " oninput="app.sync()">
+                        <label class="floating-label">البريد الإلكتروني</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="inLoc" class="floating-input" placeholder=" " oninput="app.sync()">
+                        <label class="floating-label">المدينة، الدولة</label>
+                    </div>
+                </div>
 
-                <section class="res-section" id="secSkill">
-                    <div class="res-title">Skills</div>
-                    <div class="skills-container" id="resSkills"></div>
-                </section>
+                <div class="step-slide" id="step3">
+                    <h2>النبذة الاحترافية</h2>
+                    <p class="desc">لديك 3 ثوانٍ فقط لجذب انتباه مسؤول التوظيف.</p>
+                    <div class="input-group">
+                        <textarea id="inSum" class="floating-input" rows="6" placeholder=" " oninput="app.sync()" style="min-height: 150px; line-height:1.6"></textarea>
+                        <label class="floating-label">اكتب ملخصاً احترافياً...</label>
+                    </div>
+                </div>
+
+                <div class="step-slide" id="step4">
+                    <h2>الخبرات والقدرات</h2>
+                    <p class="desc">سجل إنجازاتك، لا مهامك فقط.</p>
+                    
+                    <div id="expListContainer"></div>
+                    
+                    <button class="btn btn-ghost" onclick="document.getElementById('expForm').style.display='block'" style="width:100%; border-style:dashed; margin-bottom:20px">
+                        <i class="fa-solid fa-plus"></i> إضافة خبرة جديدة
+                    </button>
+
+                    <div id="expForm" style="display:none; background:rgba(255,255,255,0.03); padding:20px; border-radius:12px; margin-bottom:30px; border:1px solid var(--primary)">
+                        <input id="newRole" class="floating-input" placeholder="المسمى الوظيفي" style="margin-bottom:10px">
+                        <input id="newComp" class="floating-input" placeholder="اسم الشركة" style="margin-bottom:10px">
+                        <textarea id="newDesc" class="floating-input" placeholder="الإنجازات..." rows="3" style="margin-bottom:10px"></textarea>
+                        <div style="display:flex; gap:10px">
+                            <button onclick="app.addExp()" class="btn btn-primary">حفظ</button>
+                            <button onclick="document.getElementById('expForm').style.display='none'" class="btn btn-ghost">إلغاء</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top:20px">
+                        <div style="display:flex; gap:10px">
+                            <input id="newSkill" class="floating-input" placeholder=" " onkeydown="if(event.key==='Enter') app.addSkill()">
+                            <label class="floating-label">أضف مهارة (Enter)</label>
+                            <button onclick="app.addSkill()" class="btn btn-primary" style="padding:0 20px"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <div id="skillsListContainer" style="display:flex; flex-wrap:wrap; gap:10px"></div>
+                </div>
+
+                <div class="step-slide" id="step5">
+                    <div style="text-align:center; padding-top:60px">
+                        <div style="position:relative; width:100px; height:100px; margin:0 auto 30px;">
+                            <i class="fa-solid fa-check-circle" style="font-size:5rem; color:var(--primary); animation: pulse 2s infinite"></i>
+                        </div>
+                        <h2>المشروع مكتمل!</h2>
+                        <p class="desc">سيرتك الذاتية جاهزة للإطلاق. قم بتحميلها الآن.</p>
+                        
+                        <button onclick="window.print()" class="btn btn-primary" style="width:100%; font-size:1.2rem; padding:25px">
+                            <i class="fa-solid fa-file-pdf"></i> تحميل ملف PDF
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="control-bar">
+                <button class="btn btn-ghost" id="btnPrev" onclick="app.nav(-1)">رجوع</button>
+                <button class="btn btn-primary" id="btnNext" onclick="app.nav(1)">التالي</button>
             </div>
         </div>
 
-    </div>
+        <div class="preview-zone" id="previewStage">
+            <button onclick="app.toggleMobileView()" style="position:fixed; top:20px; right:20px; z-index:2000; padding:10px 15px; border-radius:50px; border:none; background:white; color:black; font-weight:bold; display:none" id="closeMobBtn">إغلاق المعاينة</button>
 
-    <div class="mobile-tabs">
-        <button class="tab-btn active" onclick="switchTab('editor')" id="tabEdit">المحرر</button>
-        <button class="tab-btn" onclick="switchTab('preview')" id="tabView">المعاينة</button>
-    </div>
+            <div class="paper-3d-wrapper" id="paper3d">
+                <div class="res-container">
+                    <div class="res-header">
+                        <img id="resImg" class="res-photo">
+                        <div>
+                            <h1 id="resName" style="font-size:2.8rem; margin:0; line-height:1; font-weight:800">اسمك هنا</h1>
+                            <p id="resTitle" style="font-size:1.4rem; opacity:0.9; margin-top:8px; font-weight:300; letter-spacing:1px">المسمى الوظيفي</p>
+                        </div>
+                    </div>
+                    
+                    <div class="res-body">
+                        <div>
+                            <div class="res-section-title">الملف الشخصي</div>
+                            <p id="resSum" style="line-height:1.8; color:#334155; margin-bottom:40px; white-space: pre-line;">...</p>
+                            
+                            <div class="res-section-title">الخبرة العملية</div>
+                            <div id="resExpDisplay"></div>
+                        </div>
+                        
+                        <div style="border-right: 1px solid #e2e8f0; padding-right: 30px; margin-right: -30px;">
+                            <div class="res-section-title">تواصل معي</div>
+                            <div id="resContactDisplay" style="font-size:0.95rem; color:#334155; line-height:2.2"></div>
 
-    <div class="modal-overlay" id="expModal">
-        <div class="modal-box">
-            <h3 style="margin-bottom:20px; color:var(--primary);" id="modalTitle">تفاصيل الخبرة</h3>
-            <input type="hidden" id="editIndex">
-            <div class="input-group">
-                <label id="lblMRole">المسمى الوظيفي *</label>
-                <input type="text" id="mRole">
-            </div>
-            <div class="input-group">
-                <label id="lblMComp">الشركة *</label>
-                <input type="text" id="mComp">
-            </div>
-            <div class="input-group">
-                <label id="lblMDate">الفترة *</label>
-                <input type="text" id="mDate" placeholder="2020 - 2022">
-            </div>
-            <div class="input-group">
-                <label id="lblMDesc">الوصف والمهام</label>
-                <textarea id="mDesc" rows="4"></textarea>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px">
-                <button class="btn btn-gold" onclick="saveExp()" style="flex:1" id="btnSave">حفظ</button>
-                <button class="btn btn-ghost" onclick="closeModal()" style="flex:1" id="btnCancel">إلغاء</button>
+                            <div class="res-section-title" style="margin-top:40px">المهارات</div>
+                            <div id="resSkillsDisplay" style="display:flex; flex-wrap:wrap; gap:8px"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        
+        <button class="mobile-fab" onclick="app.toggleMobileView()"><i class="fa-solid fa-eye"></i></button>
+
     </div>
 
     <script>
-        // --- TRANSLATION DICTIONARY ---
-        const langDict = {
-            ar: {
-                dir: 'rtl', font: "'Cairo', sans-serif",
-                txtPrint: "حفظ PDF", txtUpload: "رفع صورة", txtRemove: "حذف الصورة",
-                lblNa: "الاسم الكامل", lblTi: "المسمى الوظيفي", lblPh: "الهاتف", lblLoc: "العنوان",
-                headPersonal: "المعلومات الشخصية", headSum: "نبذة مهنية", headExp: "الخبرات العملية", headSkill: "المهارات",
-                btnAddExp: "+ إضافة خبرة", tabEdit: "تعديل", tabView: "معاينة",
-                modalTitle: "تفاصيل الخبرة", lblMRole: "المسمى *", lblMComp: "الشركة *", lblMDate: "التاريخ *", lblMDesc: "الوصف",
-                btnSave: "حفظ", btnCancel: "إلغاء",
-                resProfile: "نبذة", resExp: "الخبرات", resSkill: "المهارات", alertVal: "الرجاء تعبئة الحقول المطلوبة!"
+        /**
+         * --------------------------------------------------------------------------
+         * APP ARCHITECTURE: SINGLETON PATTERN
+         * Basel's Standard: Modular, Clean, Scalable.
+         * --------------------------------------------------------------------------
+         */
+        const app = {
+            state: {
+                step: 1,
+                totalSteps: 5,
+                data: {
+                    exp: [],
+                    skills: []
+                }
             },
-            en: {
-                dir: 'ltr', font: "'Inter', sans-serif",
-                txtPrint: "Save PDF", txtUpload: "Upload Photo", txtRemove: "Remove",
-                lblNa: "Full Name", lblTi: "Job Title", lblPh: "Phone", lblLoc: "Location",
-                headPersonal: "Personal Info", headSum: "Profile Summary", headExp: "Work Experience", headSkill: "Skills",
-                btnAddExp: "+ Add Experience", tabEdit: "Editor", tabView: "Preview",
-                modalTitle: "Experience Details", lblMRole: "Role *", lblMComp: "Company *", lblMDate: "Date *", lblMDesc: "Description",
-                btnSave: "Save", btnCancel: "Cancel",
-                resProfile: "Profile", resExp: "Experience", resSkill: "Skills", alertVal: "Please fill all required fields!"
-            }
-        };
 
-        let currentLang = 'ar';
-        let data = {
-            name: "", title: "", email: "", phone: "", location: "", summary: "", skills: "", experience: [], image: null
-        };
+            // === INITIALIZATION ===
+            init() {
+                this.loadFromStorage();
+                this.setup3DEffect();
+                this.renderUI();
+                this.showToast('🚀 System Ready. Welcome Back.', 'info');
+                
+                // Add Entrance Animations to inputs
+                document.querySelectorAll('.floating-input').forEach((el, i) => {
+                    el.style.animation = `slideUpFade 0.5s ease forwards ${i * 0.1}s`;
+                    el.style.opacity = '0'; // Start hidden
+                });
+            },
 
-        // --- INIT ---
-        window.onload = () => {
-            // Remove Intro
-            setTimeout(() => { document.getElementById('intro-overlay').style.opacity = '0'; }, 1000);
-            setTimeout(() => { document.getElementById('intro-overlay').style.display = 'none'; }, 2000);
-            
-            // Load Data
-            const saved = localStorage.getItem('baselRoyalData');
-            if(saved) data = JSON.parse(saved);
-            
-            // Populate Fields
-            document.getElementById('name').value = data.name;
-            document.getElementById('title').value = data.title;
-            document.getElementById('email').value = data.email;
-            document.getElementById('phone').value = data.phone;
-            document.getElementById('location').value = data.location;
-            document.getElementById('summary').value = data.summary;
-            document.getElementById('skills').value = data.skills;
-            
-            if(data.image) {
-                document.getElementById('resPhoto').src = data.image;
-                document.getElementById('resPhoto').style.display = 'block';
-                document.getElementById('editorAvatar').src = data.image;
-                document.getElementById('editorAvatar').style.display = 'block';
-                document.getElementById('avatarPlaceholder').style.display = 'none';
-            }
+            // === NAVIGATION LOGIC ===
+            nav(dir) {
+                const nextStep = this.state.step + dir;
+                if(nextStep < 1 || nextStep > this.state.totalSteps) return;
 
-            renderExpList();
-            updateResume();
-        };
+                // Validation Logic
+                if(dir === 1 && !this.validateStep(this.state.step)) return;
 
-        // --- CORE FUNCTIONS ---
-        function updateResume() {
-            // Save State
-            data.name = document.getElementById('name').value;
-            data.title = document.getElementById('title').value;
-            data.email = document.getElementById('email').value;
-            data.phone = document.getElementById('phone').value;
-            data.location = document.getElementById('location').value;
-            data.summary = document.getElementById('summary').value;
-            data.skills = document.getElementById('skills').value;
-            localStorage.setItem('baselRoyalData', JSON.stringify(data));
+                // Animation OUT
+                const currentSlide = document.getElementById(`step${this.state.step}`);
+                currentSlide.style.animation = 'slideUpFade 0.4s ease reverse forwards';
+                
+                setTimeout(() => {
+                    currentSlide.classList.remove('active');
+                    this.state.step = nextStep;
+                    
+                    // Animation IN
+                    const nextSlide = document.getElementById(`step${this.state.step}`);
+                    nextSlide.classList.add('active');
+                    nextSlide.style.animation = 'slideUpFade 0.6s var(--ease-smooth) forwards';
+                    
+                    this.updateControls();
+                    this.saveToStorage();
+                }, 400);
+            },
 
-            // Render Preview
-            document.getElementById('resName').innerText = data.name || (currentLang==='ar'?'الاسم هنا':'Name Here');
-            document.getElementById('resTitle').innerText = data.title || (currentLang==='ar'?'المسمى الوظيفي':'Job Title');
-            
-            // Contacts
-            let contacts = [];
-            if(data.email) contacts.push(`📧 ${data.email}`);
-            if(data.phone) contacts.push(`📱 ${data.phone}`);
-            if(data.location) contacts.push(`📍 ${data.location}`);
-            document.getElementById('resContact').innerHTML = contacts.map(c => `<span>${c}</span>`).join('');
+            validateStep(step) {
+                // Simple validation example for Step 1
+                if(step === 1) {
+                    const name = document.getElementById('inName').value;
+                    if(!name) {
+                        this.showToast('⚠️ يرجى كتابة الاسم للمتابعة', 'error');
+                        document.getElementById('inName').focus();
+                        return false;
+                    }
+                }
+                return true;
+            },
 
-            // Summary
-            document.getElementById('secSum').style.display = data.summary ? 'block' : 'none';
-            document.getElementById('resSummary').innerText = data.summary;
+            updateControls() {
+                // Progress Bar
+                const pct = ((this.state.step - 1) / (this.state.totalSteps - 1)) * 100;
+                document.getElementById('progressBar').style.width = `${pct}%`;
+                document.getElementById('currStep').innerText = this.state.step;
 
-            // Skills
-            if(data.skills) {
-                document.getElementById('secSkill').style.display = 'block';
-                document.getElementById('resSkills').innerHTML = data.skills.split(/[,،]/).filter(s=>s.trim()).map(s => 
-                    `<div class="skill-chip">${s.trim()}</div>`
-                ).join('');
-            } else {
-                document.getElementById('secSkill').style.display = 'none';
-            }
+                // Buttons
+                const btnPrev = document.getElementById('btnPrev');
+                const btnNext = document.getElementById('btnNext');
+                
+                btnPrev.style.opacity = this.state.step === 1 ? '0' : '1';
+                btnPrev.style.pointerEvents = this.state.step === 1 ? 'none' : 'all';
+                
+                btnNext.innerHTML = this.state.step === this.state.totalSteps ? 'إنهاء <i class="fa-solid fa-check"></i>' : 'التالي';
+                if(this.state.step === this.state.totalSteps) btnNext.style.display = 'none';
+                else btnNext.style.display = 'block';
+            },
 
-            // Experience Rendering
-            if(data.experience.length > 0) {
-                document.getElementById('secExp').style.display = 'block';
-                document.getElementById('resExperience').innerHTML = data.experience.map(job => `
-                    <div class="res-job">
-                        <div class="job-head">
-                            <div class="job-role">${job.role}</div>
-                            <div class="job-company">${job.company}</div>
+            // === DATA SYNC & RENDERING ===
+            sync() {
+                // Text Fields
+                const map = {
+                    'inName': 'resName',
+                    'inTitle': 'resTitle',
+                    'inSum': 'resSum'
+                };
+                
+                for(let [id, target] of Object.entries(map)) {
+                    const val = document.getElementById(id).value;
+                    document.getElementById(target).innerText = val || (id==='inName'?'اسمك هنا':(id==='inTitle'?'المسمى الوظيفي':'...'));
+                }
+
+                // Contact Construction
+                const phone = document.getElementById('inPhone').value;
+                const email = document.getElementById('inEmail').value;
+                const loc = document.getElementById('inLoc').value;
+                
+                let contactHTML = '';
+                if(phone) contactHTML += `<div><i class="fa-solid fa-phone" style="width:20px;color:#64748b"></i> ${phone}</div>`;
+                if(email) contactHTML += `<div><i class="fa-solid fa-envelope" style="width:20px;color:#64748b"></i> ${email}</div>`;
+                if(loc) contactHTML += `<div><i class="fa-solid fa-location-dot" style="width:20px;color:#64748b"></i> ${loc}</div>`;
+                
+                document.getElementById('resContactDisplay').innerHTML = contactHTML;
+                
+                this.saveToStorage();
+            },
+
+            // === COMPLEX DATA HANDLING (Exp & Skills) ===
+            addExp() {
+                const role = document.getElementById('newRole').value;
+                const comp = document.getElementById('newComp').value;
+                const desc = document.getElementById('newDesc').value;
+
+                if(!role || !comp) {
+                    this.showToast('❗ المسمى والشركة حقول مطلوبة', 'error');
+                    return;
+                }
+
+                this.state.data.exp.push({role, comp, desc});
+                this.resetForm('expForm');
+                document.getElementById('expForm').style.display = 'none';
+                this.renderLists();
+                this.showToast('✅ تمت إضافة الخبرة بنجاح');
+                this.saveToStorage();
+            },
+
+            addSkill() {
+                const skill = document.getElementById('newSkill').value;
+                if(!skill) return;
+                
+                this.state.data.skills.push(skill);
+                document.getElementById('newSkill').value = '';
+                this.renderLists();
+                this.saveToStorage();
+            },
+
+            deleteItem(type, index) {
+                this.state.data[type].splice(index, 1);
+                this.renderLists();
+                this.saveToStorage();
+                this.showToast('🗑️ تم الحذف');
+            },
+
+            renderLists() {
+                // Editor: Exp
+                document.getElementById('expListContainer').innerHTML = this.state.data.exp.map((x, i) => `
+                    <div class="mini-card">
+                        <div>
+                            <div style="font-weight:700; font-size:1.1rem">${x.role}</div>
+                            <div style="font-size:0.9rem; color:var(--text-secondary)">${x.comp}</div>
                         </div>
-                        <div class="job-date">${job.date}</div>
-                        <div class="job-desc">${job.desc}</div>
+                        <i class="fa-solid fa-trash" style="color:#ef4444; cursor:pointer; padding:10px" onclick="app.deleteItem('exp', ${i})"></i>
                     </div>
                 `).join('');
-            } else {
-                document.getElementById('secExp').style.display = 'none';
-            }
-        }
 
-        // --- IMAGE HANDLING ---
-        function handleImage(input) {
-            const file = input.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    data.image = e.target.result;
-                    document.getElementById('resPhoto').src = data.image;
-                    document.getElementById('resPhoto').style.display = 'block';
-                    document.getElementById('editorAvatar').src = data.image;
-                    document.getElementById('editorAvatar').style.display = 'block';
-                    document.getElementById('avatarPlaceholder').style.display = 'none';
-                    updateResume();
+                // Preview: Exp
+                document.getElementById('resExpDisplay').innerHTML = this.state.data.exp.map(x => `
+                    <div style="margin-bottom:20px">
+                        <div style="display:flex; justify-content:space-between; align-items:baseline">
+                            <h3 style="margin:0; font-size:1.1rem; color:#1e293b">${x.role}</h3>
+                            <span style="font-size:0.9rem; color:#7c3aed; font-weight:600">${x.comp}</span>
+                        </div>
+                        <p style="margin-top:5px; font-size:0.95rem; color:#475569; line-height:1.5">${x.desc}</p>
+                    </div>
+                `).join('');
+
+                // Editor: Skills
+                document.getElementById('skillsListContainer').innerHTML = this.state.data.skills.map((x, i) => `
+                    <span style="background:rgba(255,255,255,0.1); padding:8px 15px; border-radius:20px; font-size:0.9rem; border:1px solid var(--glass-border); display:inline-flex; align-items:center; gap:8px">
+                        ${x} <i class="fa-solid fa-xmark" style="cursor:pointer; opacity:0.6" onclick="app.deleteItem('skills', ${i})"></i>
+                    </span>
+                `).join('');
+
+                // Preview: Skills
+                document.getElementById('resSkillsDisplay').innerHTML = this.state.data.skills.map(x => `
+                    <span style="background:#f1f5f9; color:#334155; padding:5px 10px; border-radius:6px; font-size:0.85rem; font-weight:600">${x}</span>
+                `).join('');
+            },
+
+            // === IMAGE PROCESSING ===
+            handleImage(input) {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imgData = e.target.result;
+                        // Editor View
+                        const pv = document.getElementById('imgPreview');
+                        pv.src = imgData;
+                        document.getElementById('avatarBox').classList.add('has-img');
+                        
+                        // Resume View
+                        const resImg = document.getElementById('resImg');
+                        resImg.src = imgData;
+                        resImg.style.display = 'block';
+                        
+                        // Save (Warning: LocalStorage limit might be hit with large images, used simplified here)
+                        try {
+                            localStorage.setItem('basel_res_img', imgData);
+                        } catch(e) { console.warn('Image too large to save'); }
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            },
+
+            // === UI HELPERS ===
+            showToast(msg, type='success') {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerHTML = type==='error' ? `<i class="fa-solid fa-triangle-exclamation" style="color:#ef4444"></i> ${msg}` : `<i class="fa-solid fa-circle-check" style="color:#10b981"></i> ${msg}`;
+                
+                document.getElementById('toastArea').appendChild(toast);
+                
+                // Haptic Feedback (Mobile)
+                if(navigator.vibrate) navigator.vibrate(type==='error'?200:50);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px)';
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            },
+
+            resetForm(id) {
+                document.querySelectorAll(`#${id} input, #${id} textarea`).forEach(el => el.value = '');
+            },
+
+            toggleMobileView() {
+                const z = document.getElementById('previewStage');
+                const btn = document.getElementById('closeMobBtn');
+                if(z.classList.contains('show-mobile')) {
+                    z.classList.remove('show-mobile');
+                    btn.style.display = 'none';
+                } else {
+                    z.classList.add('show-mobile');
+                    btn.style.display = 'block';
+                }
+            },
+
+            // === 3D EFFECT ENGINE (The "Cinematic" Part) ===
+            setup3DEffect() {
+                const container = document.getElementById('previewStage');
+                const paper = document.getElementById('paper3d');
+                
+                if(!container || window.innerWidth < 1024) return;
+
+                container.addEventListener('mousemove', (e) => {
+                    const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
+                    const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+                    paper.style.transform = `scale(0.65) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                });
+
+                container.addEventListener('mouseleave', () => {
+                    paper.style.transform = `scale(0.65) rotateY(0deg) rotateX(0deg)`;
+                });
+            },
+
+            // === STORAGE ENGINE ===
+            saveToStorage() {
+                const data = {
+                    name: document.getElementById('inName').value,
+                    title: document.getElementById('inTitle').value,
+                    phone: document.getElementById('inPhone').value,
+                    email: document.getElementById('inEmail').value,
+                    loc: document.getElementById('inLoc').value,
+                    sum: document.getElementById('inSum').value,
+                    exp: this.state.data.exp,
+                    skills: this.state.data.skills
                 };
-                reader.readAsDataURL(file);
+                localStorage.setItem('basel_res_data', JSON.stringify(data));
+            },
+
+            loadFromStorage() {
+                const saved = localStorage.getItem('basel_res_data');
+                const savedImg = localStorage.getItem('basel_res_img');
+                
+                if(saved) {
+                    const d = JSON.parse(saved);
+                    document.getElementById('inName').value = d.name || '';
+                    document.getElementById('inTitle').value = d.title || '';
+                    document.getElementById('inPhone').value = d.phone || '';
+                    document.getElementById('inEmail').value = d.email || '';
+                    document.getElementById('inLoc').value = d.loc || '';
+                    document.getElementById('inSum').value = d.sum || '';
+                    this.state.data.exp = d.exp || [];
+                    this.state.data.skills = d.skills || [];
+                    
+                    this.sync();
+                    this.renderLists();
+                }
+                
+                if(savedImg) {
+                    document.getElementById('imgPreview').src = savedImg;
+                    document.getElementById('resImg').src = savedImg;
+                    document.getElementById('resImg').style.display = 'block';
+                    document.getElementById('avatarBox').classList.add('has-img');
+                }
             }
-        }
+        };
 
-        function removeImage() {
-            data.image = null;
-            document.getElementById('resPhoto').style.display = 'none';
-            document.getElementById('editorAvatar').style.display = 'none';
-            document.getElementById('avatarPlaceholder').style.display = 'flex';
-            updateResume();
-        }
+        // Boot
+        window.addEventListener('DOMContentLoaded', () => app.init());
 
-        // --- MODAL & VALIDATION ---
-        function openModal(idx = null) {
-            document.getElementById('expModal').style.display = 'flex';
-            if(idx !== null) {
-                const job = data.experience[idx];
-                document.getElementById('editIndex').value = idx;
-                document.getElementById('mRole').value = job.role;
-                document.getElementById('mComp').value = job.company;
-                document.getElementById('mDate').value = job.date;
-                document.getElementById('mDesc').value = job.desc;
-            } else {
-                document.getElementById('editIndex').value = '-1';
-                document.getElementById('mRole').value = '';
-                document.getElementById('mComp').value = '';
-                document.getElementById('mDate').value = '';
-                document.getElementById('mDesc').value = '';
-            }
-        }
-
-        function closeModal() { document.getElementById('expModal').style.display = 'none'; }
-
-        function saveExp() {
-            // Validation
-            const role = document.getElementById('mRole').value;
-            const comp = document.getElementById('mComp').value;
-            const date = document.getElementById('mDate').value;
-            
-            if(!role || !comp || !date) {
-                alert(langDict[currentLang].alertVal);
-                return;
-            }
-
-            const job = {
-                role: role, company: comp, date: date, desc: document.getElementById('mDesc').value
-            };
-
-            const idx = parseInt(document.getElementById('editIndex').value);
-            if(idx === -1) data.experience.push(job);
-            else data.experience[idx] = job;
-
-            updateResume();
-            renderExpList();
-            closeModal();
-        }
-
-        function renderExpList() {
-            document.getElementById('experienceList').innerHTML = data.experience.map((job, idx) => `
-                <div class="exp-card-mini">
-                    <div class="exp-info">
-                        <h4>${job.role}</h4>
-                        <p>${job.company}</p>
-                    </div>
-                    <div class="exp-actions">
-                        <button onclick="openModal(${idx})">✏️</button>
-                        <button onclick="data.experience.splice(${idx},1); renderExpList(); updateResume();" style="color:#ef4444">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // --- LANGUAGE & TABS ---
-        function toggleLang() {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            const L = langDict[currentLang];
-            
-            // DOM Direction
-            document.documentElement.dir = L.dir;
-            document.documentElement.lang = currentLang;
-            
-            // Update UI Text
-            const ids = ['txtPrint', 'txtUpload', 'txtRemove', 'lblNa', 'lblTi', 'lblPh', 'lblLoc', 'headPersonal', 'headSum', 'headExp', 'headSkill', 'btnAddExp', 'tabEdit', 'tabView', 'modalTitle', 'lblMRole', 'lblMComp', 'lblMDate', 'lblMDesc', 'btnSave', 'btnCancel'];
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.innerText = L[id];
-            });
-
-            // Update Resume Section Titles
-            document.querySelector('#secSum .res-title').innerText = L.resProfile;
-            document.querySelector('#secExp .res-title').innerText = L.resExp;
-            document.querySelector('#secSkill .res-title').innerText = L.resSkill;
-            
-            // Button Label
-            document.getElementById('langBtn').innerText = currentLang === 'ar' ? '🇺🇸 English' : '🇯🇴 العربية';
-            
-            updateResume(); // Re-render placeholder text in preview
-        }
-
-        function switchTab(mode) {
-            const editP = document.getElementById('editorPanel');
-            const viewP = document.getElementById('previewPanel');
-            const tEdit = document.getElementById('tabEdit');
-            const tView = document.getElementById('tabView');
-
-            if(mode === 'editor') {
-                editP.classList.remove('hidden');
-                viewP.classList.remove('active');
-                tEdit.classList.add('active');
-                tView.classList.remove('active');
-            } else {
-                editP.classList.add('hidden');
-                viewP.classList.add('active');
-                tEdit.classList.remove('active');
-                tView.classList.add('active');
-            }
-        }
     </script>
 </body>
 </html>
