@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BaselResume | Photo Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --primary: #0f172a;
+            --accent: #2563eb;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            display: flex; flex-direction: column; align-items: center; padding: 40px 20px;
+        }
+
+        /* --- EDITOR STYLES --- */
+        .main-container { width: 100%; max-width: 700px; transition: all 0.5s ease; }
+
+        .glass-card {
+            background: var(--glass-bg); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); padding: 3rem;
+        }
+
+        h1 { font-family: 'Playfair Display'; color: var(--primary); margin-bottom: 2rem; text-align: center; }
+        h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; margin: 2rem 0 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+
+        input, textarea {
+            width: 100%; padding: 14px; margin-bottom: 15px;
+            background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+            font-size: 1rem; color: #334155; transition: border 0.3s;
+        }
+        input:focus, textarea:focus { border-color: var(--accent); }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        /* --- PHOTO UPLOAD WIDGET --- */
+        .photo-widget {
+            display: flex; align-items: center; gap: 20px; margin-bottom: 20px;
+            background: white; padding: 15px; border-radius: 12px; border: 1px dashed #cbd5e1;
+        }
+        .photo-preview-circle {
+            width: 80px; height: 80px; border-radius: 50%; background: #f1f5f9;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            border: 2px solid #e2e8f0; object-fit: cover; flex-shrink: 0;
+        }
+        .photo-preview-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .photo-preview-circle span { font-size: 2rem; color: #cbd5e1; }
+        
+        .upload-btn {
+            background: var(--primary); color: white; padding: 8px 16px; border-radius: 6px;
+            cursor: pointer; font-size: 0.9rem; font-weight: 500; display: inline-block;
+        }
+        .remove-photo-btn {
+            color: #ef4444; background: none; border: none; font-size: 0.9rem; 
+            cursor: pointer; margin-top: 5px; text-decoration: underline; display: none;
+        }
+
+        /* --- FLOATING ACTIONS --- */
+        .floating-actions { position: fixed; bottom: 30px; right: 30px; z-index: 100; display: flex; gap: 15px; }
+        .btn-action {
+            padding: 15px 30px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: transform 0.2s;
+        }
+        .btn-action:hover { transform: translateY(-3px); }
+        .btn-preview { background: var(--primary); color: white; }
+        .btn-edit { background: white; color: var(--primary); display: none; }
+
+        /* --- PREVIEW OVERLAY --- */
+        #preview-overlay { display: none; margin-top: 2rem; width: 100%; justify-content: center; }
+        .hidden { display: none !important; }
+
+        /* --- A4 PAPER LAYOUT --- */
+        .a4-page {
+            background: white; width: 210mm; min-height: 297mm; padding: 15mm 20mm;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2); color: #1e293b;
+        }
+
+        /* Resume Header with Photo Logic */
+        .resume-header {
+            display: flex; align-items: flex-start; gap: 25px; /* Space between photo and text */
+            border-bottom: 2px solid #0f172a; padding-bottom: 25px; margin-bottom: 30px;
+        }
+        
+        .header-content { flex: 1; } /* Takes remaining space */
+
+        .resume-photo {
+            width: 110px; height: 110px; border-radius: 12px; /* Square with rounded corners or 50% for circle */
+            object-fit: cover; display: none; /* Hidden by default */
+            border: 1px solid #e2e8f0;
+        }
+
+        .resume-name { font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
+        .resume-title { font-size: 1.25rem; color: #64748b; font-weight: 500; }
+        .resume-contact { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; font-size: 0.9rem; color: #475569; }
+
+        /* Sections */
+        .section-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #94a3b8; margin: 25px 0 15px; }
+        .job-item { margin-bottom: 20px; }
+        .job-head { display: flex; justify-content: space-between; align-items: baseline; }
+        .job-role { font-weight: 700; font-size: 1.1rem; }
+        .job-date { font-family: monospace; color: #64748b; font-size: 0.9rem; }
+        .job-desc { margin-top: 5px; line-height: 1.6; color: #334155; white-space: pre-wrap; }
+        .skill-tag { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; display: inline-block; margin: 0 5px 5px 0; }
+
+        /* --- POPUP --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; width: 500px; padding: 2rem; border-radius: 20px; }
+
+        /* --- PRINT FIX --- */
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            body { background: white; display: block; padding: 0; margin: 0; }
+            .main-container, .floating-actions, .modal-overlay { display: none !important; }
+            #preview-overlay { display: block !important; margin: 0; }
+            .a4-page { width: 100%; box-shadow: none; margin: 0; padding: 15mm 20mm; min-height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="floating-actions">
+        <button class="btn-action btn-edit" id="btnEdit" onclick="toggleView('edit')">✏️ تعديل</button>
+        <button class="btn-action btn-preview" id="btnPreview" onclick="toggleView('preview')">👁️ معاينة</button>
+        <button class="btn-action btn-preview" id="btnPrint" onclick="window.print()" style="display:none; background:#059669;">🖨️ حفظ PDF</button>
+    </div>
+
+    <div class="main-container" id="editorView">
+        <div class="glass-card">
+            <h1>الملف الشخصي</h1>
+            
+            <div class="photo-widget">
+                <div class="photo-preview-circle">
+                    <span id="editorAvatarIcon">👤</span>
+                    <img id="editorImgDisplay" src="" alt="Profile">
+                </div>
+                <div>
+                    <label for="imgInput" class="upload-btn">اختر صورة شخصية (اختياري)</label>
+                    <input type="file" id="imgInput" hidden accept="image/*" onchange="handleImageUpload(this)">
+                    <br>
+                    <button id="removePhotoBtn" class="remove-photo-btn" onclick="removeImage()">حذف الصورة</button>
+                </div>
+            </div>
+
+            <form onsubmit="return false;">
+                <h2>البيانات</h2>
+                <div class="input-row">
+                    <input type="text" id="name" placeholder="الاسم الكامل">
+                    <input type="text" id="title" placeholder="المسمى الوظيفي">
+                </div>
+                <div class="input-row">
+                    <input type="text" id="email" placeholder="Email">
+                    <input type="text" id="phone" placeholder="Phone">
+                </div>
+                <input type="text" id="location" placeholder="العنوان">
+
+                <h2>النبذة</h2>
+                <textarea id="summary" rows="4" placeholder="ملخص مهني..."></textarea>
+
+                <h2>الخبرات</h2>
+                <div id="expListEditor"></div>
+                <button onclick="openModal()" style="width:100%; padding:10px; border:2px dashed #ccc; background:none; cursor:pointer;">+ إضافة خبرة</button>
+
+                <h2>المهارات</h2>
+                <textarea id="skills" rows="3" placeholder="مهاراتك (افصل بفاصلة)..."></textarea>
+            </form>
+        </div>
+    </div>
+
+    <div id="preview-overlay" class="hidden">
+        <div class="a4-page">
+            <header class="resume-header">
+                <img id="resumePhotoPreview" class="resume-photo" src="" alt="Profile Photo">
+                
+                <div class="header-content">
+                    <h1 class="resume-name" id="pName"></h1>
+                    <p class="resume-title" id="pTitle"></p>
+                    <div class="resume-contact" id="pContact"></div>
+                </div>
+            </header>
+
+            <section id="secSummary">
+                <h3 class="section-title">Profile</h3>
+                <p id="pSummary"></p>
+            </section>
+
+            <section id="secExp">
+                <h3 class="section-title">Experience</h3>
+                <div id="pExp"></div>
+            </section>
+
+            <section id="secSkills">
+                <h3 class="section-title">Core Competencies</h3>
+                <div id="pSkills"></div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="expModal">
+        <div class="modal-box">
+            <h3>تفاصيل الخبرة</h3>
+            <input type="hidden" id="editIndex">
+            <input type="text" id="mRole" placeholder="الدور الوظيفي">
+            <div class="input-row">
+                <input type="text" id="mComp" placeholder="الشركة">
+                <input type="text" id="mDate" placeholder="التاريخ">
+            </div>
+            <textarea id="mDesc" rows="4" placeholder="الوصف..."></textarea>
+            <button onclick="saveModal()" style="background:var(--primary); color:white; padding:10px 20px; border:none; border-radius:5px; margin-top:10px; cursor:pointer;">حفظ</button>
+            <button onclick="closeModal()" style="background:#ddd; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let data = JSON.parse(localStorage.getItem('baselPhotoV1')) || {
+            name: "", title: "", email: "", phone: "", location: "", summary: "", skills: "", experience: [], 
+            image: null // New field for image base64
+        };
+
+        // --- INIT ---
+        window.onload = () => { populateEditor(); };
+
+        // --- IMAGE HANDLING ---
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Resize/Limit check could go here, but for MVP we save directly
+                    data.image = e.target.result;
+                    updateEditorImageUI();
+                    saveData();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            data.image = null;
+            document.getElementById('imgInput').value = ""; // Reset input
+            updateEditorImageUI();
+            saveData();
+        }
+
+        function updateEditorImageUI() {
+            const imgDisplay = document.getElementById('editorImgDisplay');
+            const iconDisplay = document.getElementById('editorAvatarIcon');
+            const removeBtn = document.getElementById('removePhotoBtn');
+
+            if (data.image) {
+                imgDisplay.src = data.image;
+                imgDisplay.style.display = 'block';
+                iconDisplay.style.display = 'none';
+                removeBtn.style.display = 'inline-block';
+            } else {
+                imgDisplay.src = "";
+                imgDisplay.style.display = 'none';
+                iconDisplay.style.display = 'block';
+                removeBtn.style.display = 'none';
+            }
+        }
+
+        // --- VIEW SWITCHING ---
+        function toggleView(mode) {
+            const editor = document.getElementById('editorView');
+            const preview = document.getElementById('preview-overlay');
+            const btns = {
+                edit: document.getElementById('btnEdit'),
+                prev: document.getElementById('btnPreview'),
+                print: document.getElementById('btnPrint')
+            };
+
+            if (mode === 'preview') {
+                updateDataFromInputs(); // Save before switch
+                renderPreview();
+                editor.classList.add('hidden');
+                preview.classList.remove('hidden');
+                btns.prev.style.display = 'none';
+                btns.edit.style.display = 'flex';
+                btns.print.style.display = 'flex';
+            } else {
+                editor.classList.remove('hidden');
+                preview.classList.add('hidden');
+                btns.prev.style.display = 'flex';
+                btns.edit.style.display = 'none';
+                btns.print.style.display = 'none';
+            }
+        }
+
+        // --- RENDER PREVIEW ---
+        function renderPreview() {
+            // Text Fields
+            document.getElementById('pName').textContent = data.name || "الاسم";
+            document.getElementById('pTitle').textContent = data.title || "المسمى";
+            const contacts = [data.email, data.phone, data.location].filter(Boolean);
+            document.getElementById('pContact').innerHTML = contacts.map(c => `<span>${c}</span>`).join('<span> | </span>');
+            
+            // Image Logic
+            const photoEl = document.getElementById('resumePhotoPreview');
+            if (data.image) {
+                photoEl.src = data.image;
+                photoEl.style.display = 'block';
+            } else {
+                photoEl.style.display = 'none';
+            }
+
+            // Sections
+            document.getElementById('pSummary').textContent = data.summary;
+            document.getElementById('secSummary').style.display = data.summary ? 'block' : 'none';
+
+            // Exp
+            const expHTML = data.experience.map(job => `
+                <div class="job-item">
+                    <div class="job-head">
+                        <div class="job-role">${job.role} <span style="font-weight:400;color:#666">@ ${job.company}</span></div>
+                        <div class="job-date">${job.date}</div>
+                    </div>
+                    <div class="job-desc">${job.desc}</div>
+                </div>
+            `).join('');
+            document.getElementById('pExp').innerHTML = expHTML;
+            document.getElementById('secExp').style.display = data.experience.length ? 'block' : 'none';
+
+            // Skills
+            if(data.skills) {
+                document.getElementById('pSkills').innerHTML = data.skills.split(/[,،]/).filter(s=>s.trim()).map(s => `<span class="skill-tag">${s.trim()}</span>`).join('');
+                document.getElementById('secSkills').style.display = 'block';
+            } else {
+                document.getElementById('secSkills').style.display = 'none';
+            }
+        }
+
+        // --- DATA SYNC ---
+        function updateDataFromInputs() {
+            data.name = document.getElementById('name').value;
+            data.title = document.getElementById('title').value;
+            data.email = document.getElementById('email').value;
+            data.phone = document.getElementById('phone').value;
+            data.location = document.getElementById('location').value;
+            data.summary = document.getElementById('summary').value;
+            data.skills = document.getElementById('skills').value;
+            saveData();
+        }
+
+        function populateEditor() {
+            document.getElementById('name').value = data.name;
+            document.getElementById('title').value = data.title;
+            document.getElementById('email').value = data.email;
+            document.getElementById('phone').value = data.phone;
+            document.getElementById('location').value = data.location;
+            document.getElementById('summary').value = data.summary;
+            document.getElementById('skills').value = data.skills;
+            updateEditorImageUI();
+            renderExpList();
+        }
+
+        function saveData() { localStorage.setItem('baselPhotoV1', JSON.stringify(data)); }
+
+        // --- EXP LIST LOGIC ---
+        function renderExpList() {
+            document.getElementById('expListEditor').innerHTML = data.experience.map((job, idx) => `
+                <div style="background:white; border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px; display:flex; justify-content:space-between;">
+                    <b>${job.role}</b>
+                    <div>
+                        <span onclick="openModal(${idx})" style="cursor:pointer; margin-right:10px;">✏️</span>
+                        <span onclick="deleteExp(${idx})" style="cursor:pointer; color:red;">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal funcs
+        function openModal(idx = null) {
+            document.getElementById('expModal').classList.add('active');
+            if(idx !== null) {
+                const job = data.experience[idx];
+                document.getElementById('editIndex').value = idx;
+                document.getElementById('mRole').value = job.role;
+                document.getElementById('mComp').value = job.company;
+                document.getElementById('mDate').value = job.date;
+                document.getElementById('mDesc').value = job.desc;
+            } else {
+                document.getElementById('editIndex').value = '-1';
+                document.getElementById('mRole').value = '';
+                document.getElementById('mComp').value = '';
+                document.getElementById('mDate').value = '';
+                document.getElementById('mDesc').value = '';
+            }
+        }
+        function closeModal() { document.getElementById('expModal').classList.remove('active'); }
+        function saveModal() {
+            const idx = parseInt(document.getElementById('editIndex').value);
+            const job = { role: document.getElementById('mRole').value, company: document.getElementById('mComp').value, date: document.getElementById('mDate').value, desc: document.getElementById('mDesc').value };
+            if(idx === -1) data.experience.push(job); else data.experience[idx] = job;
+            updateDataFromInputs(); renderExpList(); closeModal();
+        }
+        function deleteExp(idx) { if(confirm('Delete?')) { data.experience.splice(idx, 1); updateDataFromInputs(); renderExpList(); } }
+
+    </script>
+</body>
+</html>
