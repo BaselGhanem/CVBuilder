@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         /* * --------------------------------------------------------------------------
@@ -147,7 +149,6 @@
         .steps-viewport {
             flex: 1; padding: 40px; overflow-y: auto; overflow-x: hidden;
             display: flex; flex-direction: column; 
-            /* scroll-behavior: smooth; Not used due to JS control */
         }
 
         .step-slide {
@@ -265,7 +266,7 @@
         .preview-zone {
             display: flex; align-items: center; justify-content: center;
             background: transparent;
-            perspective: 1500px; /* Deep perspective */
+            perspective: 1500px;
             overflow: hidden;
             cursor: grab;
         }
@@ -281,7 +282,7 @@
                 0 20px 50px rgba(0,0,0,0.4),
                 0 50px 100px -20px rgba(0,0,0,0.6);
             border-radius: 4px;
-            transition: transform 0.1s linear; /* Smooth mouse follow */
+            transition: transform 0.1s linear; 
             position: relative;
         }
 
@@ -324,7 +325,6 @@
         }
         @keyframes toastIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Mobile Adaptation */
         @media (max-width: 1024px) {
             .studio-layout { display: block; }
             .preview-zone { 
@@ -353,14 +353,6 @@
         .mobile-fab { display: none; }
         @media (max-width: 1024px) { .mobile-fab { display: flex; } }
 
-        /* Print Logic */
-        @media print {
-            body > *:not(.preview-zone) { display: none; }
-            .preview-zone { position: absolute; top:0; left:0; width:100%; height:auto; display:block; background:white; transform:none; opacity:1; perspective:none; overflow:visible; }
-            .paper-3d-wrapper { transform: none !important; box-shadow: none; margin: 0; width: 100%; height: auto; border-radius: 0; }
-            .res-container { width: 100%; }
-            @page { margin: 0; size: auto; }
-        }
     </style>
 </head>
 <body>
@@ -465,10 +457,10 @@
                             <i class="fa-solid fa-check-circle" style="font-size:5rem; color:var(--primary); animation: pulse 2s infinite"></i>
                         </div>
                         <h2>المشروع مكتمل!</h2>
-                        <p class="desc">سيرتك الذاتية جاهزة للإطلاق. قم بتحميلها الآن.</p>
+                        <p class="desc">سيرتك الذاتية جاهزة للإطلاق.</p>
                         
-                        <button onclick="window.print()" class="btn btn-primary" style="width:100%; font-size:1.2rem; padding:25px">
-                            <i class="fa-solid fa-file-pdf"></i> تحميل ملف PDF
+                        <button onclick="app.downloadPDF()" class="btn btn-primary" style="width:100%; font-size:1.2rem; padding:25px">
+                            <i class="fa-solid fa-file-arrow-down"></i> تحميل PDF مباشرة
                         </button>
                     </div>
                 </div>
@@ -520,12 +512,6 @@
     </div>
 
     <script>
-        /**
-         * --------------------------------------------------------------------------
-         * APP ARCHITECTURE: SINGLETON PATTERN
-         * Basel's Standard: Modular, Clean, Scalable.
-         * --------------------------------------------------------------------------
-         */
         const app = {
             state: {
                 step: 1,
@@ -536,29 +522,24 @@
                 }
             },
 
-            // === INITIALIZATION ===
             init() {
                 this.loadFromStorage();
                 this.setup3DEffect();
                 this.renderUI();
                 this.showToast('🚀 System Ready. Welcome Back.', 'info');
                 
-                // Add Entrance Animations to inputs
                 document.querySelectorAll('.floating-input').forEach((el, i) => {
                     el.style.animation = `slideUpFade 0.5s ease forwards ${i * 0.1}s`;
-                    el.style.opacity = '0'; // Start hidden
+                    el.style.opacity = '0';
                 });
             },
 
-            // === NAVIGATION LOGIC ===
             nav(dir) {
                 const nextStep = this.state.step + dir;
                 if(nextStep < 1 || nextStep > this.state.totalSteps) return;
 
-                // Validation Logic
                 if(dir === 1 && !this.validateStep(this.state.step)) return;
 
-                // Animation OUT
                 const currentSlide = document.getElementById(`step${this.state.step}`);
                 currentSlide.style.animation = 'slideUpFade 0.4s ease reverse forwards';
                 
@@ -566,7 +547,6 @@
                     currentSlide.classList.remove('active');
                     this.state.step = nextStep;
                     
-                    // Animation IN
                     const nextSlide = document.getElementById(`step${this.state.step}`);
                     nextSlide.classList.add('active');
                     nextSlide.style.animation = 'slideUpFade 0.6s var(--ease-smooth) forwards';
@@ -577,7 +557,6 @@
             },
 
             validateStep(step) {
-                // Simple validation example for Step 1
                 if(step === 1) {
                     const name = document.getElementById('inName').value;
                     if(!name) {
@@ -590,12 +569,10 @@
             },
 
             updateControls() {
-                // Progress Bar
                 const pct = ((this.state.step - 1) / (this.state.totalSteps - 1)) * 100;
                 document.getElementById('progressBar').style.width = `${pct}%`;
                 document.getElementById('currStep').innerText = this.state.step;
 
-                // Buttons
                 const btnPrev = document.getElementById('btnPrev');
                 const btnNext = document.getElementById('btnNext');
                 
@@ -607,9 +584,7 @@
                 else btnNext.style.display = 'block';
             },
 
-            // === DATA SYNC & RENDERING ===
             sync() {
-                // Text Fields
                 const map = {
                     'inName': 'resName',
                     'inTitle': 'resTitle',
@@ -621,7 +596,6 @@
                     document.getElementById(target).innerText = val || (id==='inName'?'اسمك هنا':(id==='inTitle'?'المسمى الوظيفي':'...'));
                 }
 
-                // Contact Construction
                 const phone = document.getElementById('inPhone').value;
                 const email = document.getElementById('inEmail').value;
                 const loc = document.getElementById('inLoc').value;
@@ -636,7 +610,6 @@
                 this.saveToStorage();
             },
 
-            // === COMPLEX DATA HANDLING (Exp & Skills) ===
             addExp() {
                 const role = document.getElementById('newRole').value;
                 const comp = document.getElementById('newComp').value;
@@ -673,7 +646,6 @@
             },
 
             renderLists() {
-                // Editor: Exp
                 document.getElementById('expListContainer').innerHTML = this.state.data.exp.map((x, i) => `
                     <div class="mini-card">
                         <div>
@@ -684,7 +656,6 @@
                     </div>
                 `).join('');
 
-                // Preview: Exp
                 document.getElementById('resExpDisplay').innerHTML = this.state.data.exp.map(x => `
                     <div style="margin-bottom:20px">
                         <div style="display:flex; justify-content:space-between; align-items:baseline">
@@ -695,36 +666,30 @@
                     </div>
                 `).join('');
 
-                // Editor: Skills
                 document.getElementById('skillsListContainer').innerHTML = this.state.data.skills.map((x, i) => `
                     <span style="background:rgba(255,255,255,0.1); padding:8px 15px; border-radius:20px; font-size:0.9rem; border:1px solid var(--glass-border); display:inline-flex; align-items:center; gap:8px">
                         ${x} <i class="fa-solid fa-xmark" style="cursor:pointer; opacity:0.6" onclick="app.deleteItem('skills', ${i})"></i>
                     </span>
                 `).join('');
 
-                // Preview: Skills
                 document.getElementById('resSkillsDisplay').innerHTML = this.state.data.skills.map(x => `
                     <span style="background:#f1f5f9; color:#334155; padding:5px 10px; border-radius:6px; font-size:0.85rem; font-weight:600">${x}</span>
                 `).join('');
             },
 
-            // === IMAGE PROCESSING ===
             handleImage(input) {
                 if (input.files && input.files[0]) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const imgData = e.target.result;
-                        // Editor View
                         const pv = document.getElementById('imgPreview');
                         pv.src = imgData;
                         document.getElementById('avatarBox').classList.add('has-img');
                         
-                        // Resume View
                         const resImg = document.getElementById('resImg');
                         resImg.src = imgData;
                         resImg.style.display = 'block';
                         
-                        // Save (Warning: LocalStorage limit might be hit with large images, used simplified here)
                         try {
                             localStorage.setItem('basel_res_img', imgData);
                         } catch(e) { console.warn('Image too large to save'); }
@@ -733,15 +698,35 @@
                 }
             },
 
-            // === UI HELPERS ===
+            // === PDF DIRECT DOWNLOAD FUNCTION ===
+            downloadPDF() {
+                // Select the actual content container (inside the 3D wrapper)
+                // We target .res-container directly to get clean flat content
+                const element = document.querySelector('.res-container');
+                
+                const opt = {
+                    margin: 0,
+                    filename: 'BaselResume.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Feedback
+                this.showToast('⏳ جاري تحضير ملف PDF...', 'info');
+
+                // Generate and Save
+                html2pdf().set(opt).from(element).save().then(() => {
+                    this.showToast('✅ تم التحميل بنجاح');
+                });
+            },
+
             showToast(msg, type='success') {
                 const toast = document.createElement('div');
                 toast.className = 'toast';
                 toast.innerHTML = type==='error' ? `<i class="fa-solid fa-triangle-exclamation" style="color:#ef4444"></i> ${msg}` : `<i class="fa-solid fa-circle-check" style="color:#10b981"></i> ${msg}`;
-                
                 document.getElementById('toastArea').appendChild(toast);
                 
-                // Haptic Feedback (Mobile)
                 if(navigator.vibrate) navigator.vibrate(type==='error'?200:50);
 
                 setTimeout(() => {
@@ -767,11 +752,9 @@
                 }
             },
 
-            // === 3D EFFECT ENGINE (The "Cinematic" Part) ===
             setup3DEffect() {
                 const container = document.getElementById('previewStage');
                 const paper = document.getElementById('paper3d');
-                
                 if(!container || window.innerWidth < 1024) return;
 
                 container.addEventListener('mousemove', (e) => {
@@ -785,7 +768,6 @@
                 });
             },
 
-            // === STORAGE ENGINE ===
             saveToStorage() {
                 const data = {
                     name: document.getElementById('inName').value,
@@ -814,7 +796,6 @@
                     document.getElementById('inSum').value = d.sum || '';
                     this.state.data.exp = d.exp || [];
                     this.state.data.skills = d.skills || [];
-                    
                     this.sync();
                     this.renderLists();
                 }
@@ -828,9 +809,7 @@
             }
         };
 
-        // Boot
         window.addEventListener('DOMContentLoaded', () => app.init());
-
     </script>
 </body>
 </html>
